@@ -89,23 +89,37 @@ function renderProducts(listData) {
 
   productWrap.querySelectorAll(".addCardBtn").forEach((btn, index) => {
     btn.addEventListener("click", (e) => {
-      let inCart = false;
+      // way 2
+      let count = 1;
       if (cartNow.carts[0]) {
         cartNow.carts.forEach((item) => {
           if (item.product.id === listData[index].id) {
-            inCart = true;
-            let count = item.quantity + 1;
-            // deleteCartItem(item.id);
-            // addCartItem(listData[index].id, count);
-            // 順序不一定就是這個意思，而且addCartItem(post)本身就會覆蓋，不需要先delete
-            addInCartItemQuantity(item.id, count);
-            // 不過addCartItem/addInCartItemQuantity都可以用，建議還是用patch比較好一點點
+            count = item.quantity + 1;
           }
         })
       }
-      if (!inCart) {
-        addCartItem(listData[index].id, 1);
-      }
+      addCartItem(listData[index].id, count);
+
+      // way 1
+      // let inCart = false;
+      // if (cartNow.carts[0]) {
+      //   cartNow.carts.forEach((item) => {
+      //     if (item.product.id === listData[index].id) {
+      //       inCart = true;
+      //       let count = item.quantity + 1;
+      //       // deleteCartItem(item.id);
+      //       // addCartItem(listData[index].id, count);
+      //       // 順序不一定就是這個意思，而且addCartItem(post)本身就會覆蓋，不需要先delete
+      //       addInCartItemQuantity(item.id, count);
+      //       // 不過addCartItem/addInCartItemQuantity都可以用，建議還是用patch比較好一點點
+      //     }
+      //   })
+      // }
+      // if (!inCart) {
+      //   addCartItem(listData[index].id, 1);
+      // }
+
+
     })
   })
 }
