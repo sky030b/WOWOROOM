@@ -57,6 +57,7 @@ table {
           box-sizing: border-box;
   -webkit-transition: all .2s;
   transition: all .2s;
+  scroll-behavior: smooth;
 }
 
 html, body {
