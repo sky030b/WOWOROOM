@@ -61,9 +61,10 @@ function closeMenu() {
 // axios functions
 const api_path = "justafairy";
 const api_token = "KHAiXKtsbEZWi2nS89puWozAam52";
-const baseUrl = "https://livejs-api.hexschool.io";
+const baseUrl = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}`;
 
-let cartNow = {};
+// 產品列表部分
+let listData = [];
 const productWrap = document.querySelector(".productWrap");
 function renderProducts(listData) {
   let str = "";
@@ -89,48 +90,19 @@ function renderProducts(listData) {
 
   productWrap.querySelectorAll(".addCardBtn").forEach((btn, index) => {
     btn.addEventListener("click", (e) => {
-      // way 2
-      let count = 1;
-      if (cartNow.carts[0]) {
-        cartNow.carts.forEach((item) => {
-          if (item.product.id === listData[index].id) {
-            count = item.quantity + 1;
-          }
-        })
-      }
-      addCartItem(listData[index].id, count);
-
-      // way 1
-      // let inCart = false;
-      // if (cartNow.carts[0]) {
-      //   cartNow.carts.forEach((item) => {
-      //     if (item.product.id === listData[index].id) {
-      //       inCart = true;
-      //       let count = item.quantity + 1;
-      //       // deleteCartItem(item.id);
-      //       // addCartItem(listData[index].id, count);
-      //       // 順序不一定就是這個意思，而且addCartItem(post)本身就會覆蓋，不需要先delete
-      //       addInCartItemQuantity(item.id, count);
-      //       // 不過addCartItem/addInCartItemQuantity都可以用，建議還是用patch比較好一點點
-      //     }
-      //   })
-      // }
-      // if (!inCart) {
-      //   addCartItem(listData[index].id, 1);
-      // }
-
-
+      btn.classList.add("isDisabled");
+      addCartItem(listData[index].id);
+      btn.classList.remove("isDisabled");
     })
   })
 }
 
-let listData = [];
 // 篩選品項種類
 const productSelect = document.querySelector(".productSelect");
 productSelect.addEventListener("change", getProductsList);
 // 取得產品列表
 function getProductsList() {
-  axios.get(`${baseUrl}/api/livejs/v1/customer/${api_path}/products`)
+  axios.get(`${baseUrl}/products`)
     .then(function (response) {
       // console.log(response.data.products);
       listData = response.data.products;
@@ -144,6 +116,8 @@ function getProductsList() {
     })
 }
 
+// 購物車部分
+let cartNow = {};
 const shoppingCartTable = document.querySelector(".shoppingCart-table")
 function renderCart(objData) {
   let str = `
@@ -220,7 +194,7 @@ function renderCart(objData) {
 
 // 取得購物車列表
 function getCartList() {
-  axios.get(`${baseUrl}/api/livejs/v1/customer/${api_path}/carts`)
+  axios.get(`${baseUrl}/carts`)
     .then(function (response) {
       // console.log(response.data);
       cartNow = response.data;
@@ -232,29 +206,19 @@ function getCartList() {
 }
 
 // 加入購物車
-function addCartItem(productId, quantity) {
-  axios.post(`${baseUrl}/api/livejs/v1/customer/${api_path}/carts`, {
+function addCartItem(productId) {
+  let count = 1;
+  if (cartNow.carts[0]) {
+    cartNow.carts.forEach((item) => {
+      if (item.product.id === productId) {
+        count = item.quantity + 1;
+      }
+    })
+  }
+  axios.post(`${baseUrl}/carts`, {
     "data": {
       "productId": productId,
-      "quantity": quantity
-    }
-  })
-    .then(function (response) {
-      // console.log(response.data);
-      cartNow = response.data;
-      renderCart(cartNow);
-    })
-    .catch(function (error) {
-      console.log(error.response.data);
-    })
-}
-
-// 累加購物車內已有品項數量
-function addInCartItemQuantity(recordId, quantity) {
-  axios.patch(`${baseUrl}/api/livejs/v1/customer/${api_path}/carts`, {
-    "data": {
-      "id": recordId,
-      "quantity": quantity
+      "quantity": count
     }
   })
     .then(function (response) {
@@ -269,7 +233,7 @@ function addInCartItemQuantity(recordId, quantity) {
 
 // 清除購物車內全部產品
 function deleteAllCartList() {
-  axios.delete(`${baseUrl}/api/livejs/v1/customer/${api_path}/carts`)
+  axios.delete(`${baseUrl}/carts`)
     .then(function (response) {
       // console.log(response.data);
       cartNow = response.data;
@@ -282,7 +246,7 @@ function deleteAllCartList() {
 
 // 刪除購物車內特定產品
 function deleteCartItem(itemId) {
-  axios.delete(`${baseUrl}/api/livejs/v1/customer/${api_path}/carts/${itemId}`)
+  axios.delete(`${baseUrl}/carts/${itemId}`)
     .then(function (response) {
       // console.log(response.data);
       cartNow = response.data;
@@ -293,6 +257,7 @@ function deleteCartItem(itemId) {
     })
 }
 
+// 訂單部分
 // 送出購買訂單
 function createOrder(userObj) {
   axios.post(`https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders`, userObj)
