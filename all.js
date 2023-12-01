@@ -60,7 +60,7 @@ function closeMenu() {
 
 // axios functions
 const api_path = "justafairy";
-const api_token = "KHAiXKtsbEZWi2nS89puWozAam52";
+// const api_token = "KHAiXKtsbEZWi2nS89puWozAam52";
 const baseUrl = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}`;
 
 // 產品列表部分
@@ -90,9 +90,7 @@ function renderProducts(listData) {
 
   productWrap.querySelectorAll(".addCardBtn").forEach((btn, index) => {
     btn.addEventListener("click", (e) => {
-      btn.classList.add("isDisabled");
       addCartItem(listData[index].id);
-      btn.classList.remove("isDisabled");
     })
   })
 }
@@ -102,17 +100,17 @@ const productSelect = document.querySelector(".productSelect");
 productSelect.addEventListener("change", getProductsList);
 // 取得產品列表
 function getProductsList() {
-  axios.get(`${baseUrl}/products`)
-    .then(function (response) {
-      // console.log(response.data.products);
+  const apiUrl = `${baseUrl}/products`;
+  axios.get(apiUrl)
+    .then((response) => {
       listData = response.data.products;
       if (productSelect.value !== "全部") {
         listData = listData.filter((item) => item.category === productSelect.value);
       }
       renderProducts(listData);
     })
-    .catch(function (error) {
-      console.log(error.response.data);
+    .catch((error) => {
+      alert(error.response.data.message);
     })
 }
 
@@ -194,14 +192,14 @@ function renderCart(objData) {
 
 // 取得購物車列表
 function getCartList() {
-  axios.get(`${baseUrl}/carts`)
-    .then(function (response) {
-      // console.log(response.data);
+  const apiUrl = `${baseUrl}/carts`;
+  axios.get(apiUrl)
+    .then((response) => {
       cartNow = response.data;
       renderCart(cartNow);
     })
-    .catch(function (error) {
-      console.log(error.response.data);
+    .catch((error) => {
+      alert(error.response.data.message);
     })
 }
 
@@ -215,58 +213,61 @@ function addCartItem(productId) {
       }
     })
   }
-  axios.post(`${baseUrl}/carts`, {
+
+  const apiUrl = `${baseUrl}/carts`;
+  const data = {
     "data": {
       "productId": productId,
       "quantity": count
     }
-  })
-    .then(function (response) {
-      // console.log(response.data);
+  };
+
+  axios.post(apiUrl, data)
+    .then((response) => {
       cartNow = response.data;
       renderCart(cartNow);
     })
-    .catch(function (error) {
-      console.log(error.response.data);
+    .catch((error) => {
+      alert(error.response.data.message);
     })
 }
 
 // 清除購物車內全部產品
 function deleteAllCartList() {
-  axios.delete(`${baseUrl}/carts`)
-    .then(function (response) {
-      // console.log(response.data);
+  const apiUrl = `${baseUrl}/carts`;
+  axios.delete(apiUrl)
+    .then((response) => {
       cartNow = response.data;
       renderCart(cartNow);
     })
-    .catch(function (error) {
-      console.log(error.response.data);
+    .catch((error) => {
+      alert(error.response.data.message);
     })
 }
 
 // 刪除購物車內特定產品
 function deleteCartItem(itemId) {
-  axios.delete(`${baseUrl}/carts/${itemId}`)
-    .then(function (response) {
-      // console.log(response.data);
+  const apiUrl = `${baseUrl}/carts/${itemId}`;
+  axios.delete(apiUrl)
+    .then((response) => {
       cartNow = response.data;
       renderCart(cartNow);
     })
-    .catch(function (error) {
-      console.log(error.response.data.message);
+    .catch((error) => {
+      alert(error.response.data.message);
     })
 }
 
 // 訂單部分
 // 送出購買訂單
 function createOrder(userObj) {
-  axios.post(`https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders`, userObj)
-    .then(function (response) {
-      // console.log(response.data);
+  const apiUrl = `${baseUrl}/orders`;
+  axios.post(apiUrl, userObj)
+    .then((response) => {
       getCartList();
     })
-    .catch(function (error) {
-      console.log(error.response.data);
+    .catch((error) => {
+      alert(error.response.data.message);
     })
 }
 
