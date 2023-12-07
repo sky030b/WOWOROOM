@@ -119,10 +119,7 @@ function renderOption() {
   productSelect.innerHTML = optionStr +
     categories.map((item) => `<option value=${item}>${item}</option>`).join("");
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> dev
 productSelect.addEventListener("change", (e) => {
   let selectedProduct;
   if (e.target.value === "全部") {
