@@ -4,7 +4,7 @@
 
 ## 概觀
 
-欲查看前台產品和購物車的介面，您可以前往 [前台](https://sky030b.github.io/woworoom/)。  
+欲查看前台所有產品和購物車的介面，您可以前往 [前台](https://sky030b.github.io/woworoom/)。  
 
 **請注意：**  
 woworoom 的購物車實作方式是所有使用者同時共用的。  
