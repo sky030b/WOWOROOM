@@ -888,3 +888,13 @@ body {
     }
   }
 }
+
+.cartAmount {
+  & .cartAmount-icon, & span {
+    vertical-align: middle;
+  }
+  & a {
+    text-decoration: none;
+    display: inline-block;
+  }
+}

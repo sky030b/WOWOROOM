@@ -31,7 +31,7 @@ function formatTimestamp(timestamp) {
 }
 
 // axios functions
-const api_path = "justafairy";
+const api_path = "sky030b";
 const baseUrl = `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}`;
 const api_token = "KHAiXKtsbEZWi2nS89puWozAam52";
 const authorizationObj = { headers: { authorization: api_token } };
