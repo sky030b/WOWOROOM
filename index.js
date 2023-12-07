@@ -60,7 +60,7 @@ function closeMenu() {
 
 
 // axios functions
-const api_path = "justafairy";
+const api_path = "sky030b";
 const baseUrl = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}`;
 
 // 產品列表部分
@@ -101,6 +101,7 @@ function getProductsList() {
   axios.get(apiUrl)
     .then((response) => {
       productList = response.data.products;
+      renderOption();
       renderProducts(productList);
     })
     .catch((error) => {
@@ -112,6 +113,13 @@ function getProductsList() {
 
 // 篩選品項種類
 const productSelect = document.querySelector(".productSelect");
+function renderOption() {
+  let categories = [...new Set(productList.map((item) => item.category))];
+  let optionStr = `<option value="全部" selected>全部</option>`;
+  productSelect.innerHTML = optionStr +
+    categories.map((item) => `<option value=${item}>${item}</option>`).join("");
+}
+
 productSelect.addEventListener("change", (e) => {
   let selectedProduct;
   if (e.target.value === "全部") {
@@ -154,7 +162,11 @@ function renderCart(objData = cartNow) {
           </div>
         </td>
         <td>NT$${item.product.price.toLocaleString()}</td>
-        <td>${item.quantity}</td>
+        <td class="quantity">
+        <a href="javascript:;" class="material-icons cartAmount-icon minusBtn" data-num="${item.quantity - 1}" data-id="${item.id}">remove</a>
+        <span>${item.quantity}</span>
+        <a href="javascript:;" class="material-icons cartAmount-icon addBtn" data-num="${item.quantity + 1}" data-id="${item.id}">add</a>
+        </td>
         <td>NT$${(item.product.price * item.quantity).toLocaleString()}</td>
         <td class="discardBtn">
           <a
@@ -188,13 +200,20 @@ function renderCart(objData = cartNow) {
   shoppingCartTable.innerHTML = str;
 
   if (objData.carts[0]) {
-    const deleteItemBtns = shoppingCartTable.querySelectorAll(".material-icons");
-    const discardAllBtn = shoppingCartTable.querySelector(".discardAllBtn");
+    const editQuantityBtns = document.querySelectorAll('.cartAmount-icon');
+    editQuantityBtns.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // modifyQuantityCart(e.target.dataset.id, +e.target.dataset.num);
+      });
+    });
 
+    const deleteItemBtns = shoppingCartTable.querySelectorAll(".material-icons");
     deleteItemBtns.forEach((btn, index) => {
       btn.addEventListener("click", () => deleteCartItem(objData.carts[index].id));
     })
 
+    const discardAllBtn = shoppingCartTable.querySelector(".discardAllBtn");
     discardAllBtn.addEventListener("click", deleteAllCartList);
   }
 }
@@ -234,6 +253,33 @@ function addCartItem(productId) {
   };
 
   axios.post(apiUrl, data)
+    .then((response) => {
+      cartNow = response.data;
+      renderCart();
+    })
+    .catch((error) => {
+      // alert(error.response.data.message);
+      alert("發生了某些錯誤，將重新整理畫面。");
+      location.reload();
+    })
+}
+
+// 增減購物車內商品
+function modifyQuantityCart(id, quantity) {
+  if (quantity === 0) {
+    deleteCartItem(id);
+    return;
+  }
+
+  const url = `${baseUrl}/carts`;
+  const data = {
+    "data": {
+      "id": id,
+      "quantity": quantity
+    }
+  }
+
+  axios.patch(url, data)
     .then((response) => {
       cartNow = response.data;
       renderCart();
