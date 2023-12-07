@@ -317,24 +317,6 @@ for (let i = 0; i < orderInfoForm.length; i++) {
     }
   })
 }
-// orderInfoForm.forEach((input, index) => {
-//   input.addEventListener("input", (e) => {
-//     orderInfoMessages[index].classList.add("display-none");
-//     if (!e.target.value) {
-//       orderInfoMessages[index].classList.remove("display-none");
-//     }
-//   })
-// })
-// orderInfoForm不能使用forEach function，不過還沒確認為什麼
-
-// 問題出在 orderInfoForm 是一個 HTMLFormElement，而 forEach 是 Array 的方法，
-// HTMLFormElement 不具備 forEach 方法。
-// 可以使用 Array.from 或 Array.prototype.forEach.call 
-// 來將 NodeList 轉換為陣列，然後再使用 forEach 方法
-// ex:
-// Array.from(orderInfoForm).forEach((input, index) => {...})
-// 或是
-// Array.prototype.forEach.call(orderInfoForm, (input, index) => {...})
 
 
 // 初始化頁面
