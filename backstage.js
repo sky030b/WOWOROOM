@@ -181,9 +181,6 @@ const chartTitle = document.querySelector(".section-title");
 
 const chartSelectBtns = document.querySelectorAll(".chart-select li");
 
-// const showCategoryBtn = document.querySelector(".category");
-// const showProductsBtn = document.querySelector(".products");
-
 // 取得產品列表
 function getProductsList() {
   return new Promise((resolve, reject) => {
@@ -227,59 +224,31 @@ function specificProductData(orderList) {
 }
 
 // 全產品類別營收比重
-// 版本一
 function productCategoryData(orderList) {
   chartTitle.textContent = `全產品類別營收比重`;
 
-  let bedFrame = 0;
-  let storage = 0;
-  let curtains = 0;
+  let outputAry = [['床架', 0], ['收納', 0], ['窗簾', 0]];
 
   orderList.forEach((item) => {
     item.products.forEach((product) => {
-      if (product.category === "床架") {
-        bedFrame += product.quantity * product.price;
-      } else if (product.category === "收納") {
-        storage += product.quantity * product.price;
-      } else if (product.category === "窗簾") {
-        curtains += product.quantity * product.price;
-      }
+      outputAry = outputAry.map(([category, price]) => {
+        if (product.category === category) {
+          price += product.quantity * product.price;
+        }
+        return [category, price];
+      })
     })
   })
 
-  return [['床架', bedFrame], ['收納', storage], ['窗簾', curtains]];
+  return outputAry;
 }
-// 版本二
-// function productCategoryData(orderList) {
-//   chartTitle.textContent = `全產品類別營收比重`;
-
-//   let outputAry = [['床架', 0], ['收納', 0], ['窗簾', 0]];
-
-//   orderList.forEach((item) => {
-//     item.products.forEach((product) => {
-//       outputAry = outputAry.map(([category, price]) => {
-//         if (product.category === category) {
-//           price += product.quantity * product.price;
-//         }
-//         return [category, price];
-//       })
-//     })
-//   })
-
-//   return outputAry;
-// }
 
 // C3.js
 function renderChart() {
   if (!orderList[0]) {
     chartTitle.textContent = "";
     chartDiv.classList.add("display-none");
-
     chartSelectBtns.forEach((btn) => btn.classList.add("isDisabled"));
-
-    // showCategoryBtn.classList.add("isDisabled");
-    // showProductsBtn.classList.add("isDisabled");
-
     return;
   }
 
@@ -291,16 +260,6 @@ function renderChart() {
       renderChart();
     })
   })
-
-  // showCategoryBtn.addEventListener("click", (e) => {
-  //   chartNow = `category`;
-  //   renderChart();
-  // })
-
-  // showProductsBtn.addEventListener("click", (e) => {
-  //   chartNow = `products`;
-  //   renderChart();
-  // })
 
   data = chartNow === "category" ?
     productCategoryData(orderList) :
