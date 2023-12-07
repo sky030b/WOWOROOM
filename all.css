@@ -889,7 +889,7 @@ body {
   }
 }
 
-.quantity {
+.cartAmount {
   & .cartAmount-icon, & span {
     vertical-align: middle;
   }

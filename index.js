@@ -162,16 +162,16 @@ function renderCart(objData = cartNow) {
           </div>
         </td>
         <td>NT$${item.product.price.toLocaleString()}</td>
-        <td class="quantity">
-        <a href="javascript:;" class="material-icons cartAmount-icon minusBtn" data-num="${item.quantity - 1}" data-id="${item.id}">remove</a>
+        <td class="cartAmount">
+        <a href="javascript:;"><span class="material-icons cartAmount-icon minusBtn" data-num="${item.quantity - 1}" data-id="${item.id}">remove</span></a>
         <span>${item.quantity}</span>
-        <a href="javascript:;" class="material-icons cartAmount-icon addBtn" data-num="${item.quantity + 1}" data-id="${item.id}">add</a>
+        <a href="javascript:;"><span class="material-icons cartAmount-icon addBtn" data-num="${item.quantity + 1}" data-id="${item.id}">add</span></a>
         </td>
         <td>NT$${(item.product.price * item.quantity).toLocaleString()}</td>
         <td class="discardBtn">
           <a
             href="javascript:;"
-            class="material-icons"
+            class="material-icons deleteBtn"
           >
             clear
           </a>
@@ -204,11 +204,11 @@ function renderCart(objData = cartNow) {
     editQuantityBtns.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
-        // modifyQuantityCart(e.target.dataset.id, +e.target.dataset.num);
+        modifyQuantityCart(e.target.dataset.id, +e.target.dataset.num);
       });
     });
 
-    const deleteItemBtns = shoppingCartTable.querySelectorAll(".material-icons");
+    const deleteItemBtns = shoppingCartTable.querySelectorAll(".deleteBtn");
     deleteItemBtns.forEach((btn, index) => {
       btn.addEventListener("click", () => deleteCartItem(objData.carts[index].id));
     })
