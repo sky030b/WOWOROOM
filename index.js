@@ -101,6 +101,7 @@ function getProductsList() {
   axios.get(apiUrl)
     .then((response) => {
       productList = response.data.products;
+      renderOption();
       renderProducts(productList);
     })
     .catch((error) => {
@@ -112,6 +113,12 @@ function getProductsList() {
 
 // 篩選品項種類
 const productSelect = document.querySelector(".productSelect");
+function renderOption() {
+  let categories = [...new Set(productList.map((item) => item.category))];
+  let optionStr = `<option value="全部" selected>全部</option>`;
+  productSelect.innerHTML = optionStr +
+    categories.map((item) => `<option value=${item}>${item}</option>`).join("");
+}
 productSelect.addEventListener("change", (e) => {
   let selectedProduct;
   if (e.target.value === "全部") {
