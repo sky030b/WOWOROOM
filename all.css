@@ -335,6 +335,7 @@ body {
   -ms-overflow-style: none;
   /* IE and Edge */
   scrollbar-width: none;
+  scroll-behavior: auto;
   /* Firefox */
 }
 
@@ -799,20 +800,20 @@ body {
   opacity: 0.8;
 }
 
-.orderStatus {
+/* .orderStatus {
   position: relative;
-}
+} */
 
 .orderStatus a {
-  position: absolute;
+  display: block;
   padding: 10px;
-  top: 0;
+  /* color: #FFFFFF;
+  text-decoration: none; */
+  /* position: absolute; */
+  /* top: 0;
   bottom: 0;
   right: 0;
-  left: 0;
-  display: block;
-  text-decoration: none;
-  color: #FFFFFF;
+  left: 0; */
 }
 
 .orderStatus-unDone {
@@ -846,11 +847,44 @@ body {
 
 .isDisabled {
   color: currentColor;
-  cursor: not-allowed;
+  cursor: not-allowed!important;
   opacity: 0.5;
   text-decoration: none;
 }
 
 .display-none {
   display: none;
+}
+
+.width-limit {
+  max-width: 150px; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-order {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  line-height: 5;
+  border: #797979 1px solid;
+  border-radius: 10px;
+}
+
+.chart-select {
+  display: flex;
+  
+  & li {
+    margin: 0 5px;
+    padding: 10px;
+    border: gray 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover {
+      color: #6A33F8;
+    }
+  }
 }

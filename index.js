@@ -58,15 +58,15 @@ function closeMenu() {
   menu.classList.remove('openMenu');
 }
 
+
 // axios functions
 const api_path = "justafairy";
-// const api_token = "KHAiXKtsbEZWi2nS89puWozAam52";
 const baseUrl = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}`;
 
 // 產品列表部分
-let listData = [];
+let productList = [];
 const productWrap = document.querySelector(".productWrap");
-function renderProducts(listData) {
+function renderProducts(listData = productList) {
   let str = "";
   listData.forEach((item) => {
     str += `
@@ -95,29 +95,38 @@ function renderProducts(listData) {
   })
 }
 
-// 篩選品項種類
-const productSelect = document.querySelector(".productSelect");
-productSelect.addEventListener("change", getProductsList);
 // 取得產品列表
 function getProductsList() {
   const apiUrl = `${baseUrl}/products`;
   axios.get(apiUrl)
     .then((response) => {
-      listData = response.data.products;
-      if (productSelect.value !== "全部") {
-        listData = listData.filter((item) => item.category === productSelect.value);
-      }
-      renderProducts(listData);
+      productList = response.data.products;
+      renderProducts(productList);
     })
     .catch((error) => {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      alert("發生了某些錯誤，將重新整理畫面。");
+      location.reload();
     })
 }
+
+// 篩選品項種類
+const productSelect = document.querySelector(".productSelect");
+productSelect.addEventListener("change", (e) => {
+  let selectedProduct;
+  if (e.target.value === "全部") {
+    selectedProduct = productList;
+  } else {
+    selectedProduct = productList.filter((item) => item.category === e.target.value);
+  }
+  renderProducts(selectedProduct);
+});
+
 
 // 購物車部分
 let cartNow = {};
 const shoppingCartTable = document.querySelector(".shoppingCart-table")
-function renderCart(objData) {
+function renderCart(objData = cartNow) {
   let str = `
   <tr>
     <th width="40%">品項</th>
@@ -196,10 +205,12 @@ function getCartList() {
   axios.get(apiUrl)
     .then((response) => {
       cartNow = response.data;
-      renderCart(cartNow);
+      renderCart();
     })
     .catch((error) => {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      alert("發生了某些錯誤，將重新整理畫面。");
+      location.reload();
     })
 }
 
@@ -225,10 +236,12 @@ function addCartItem(productId) {
   axios.post(apiUrl, data)
     .then((response) => {
       cartNow = response.data;
-      renderCart(cartNow);
+      renderCart();
     })
     .catch((error) => {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      alert("發生了某些錯誤，將重新整理畫面。");
+      location.reload();
     })
 }
 
@@ -238,10 +251,12 @@ function deleteAllCartList() {
   axios.delete(apiUrl)
     .then((response) => {
       cartNow = response.data;
-      renderCart(cartNow);
+      renderCart();
     })
     .catch((error) => {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      alert("發生了某些錯誤，將重新整理畫面。");
+      location.reload();
     })
 }
 
@@ -251,12 +266,15 @@ function deleteCartItem(itemId) {
   axios.delete(apiUrl)
     .then((response) => {
       cartNow = response.data;
-      renderCart(cartNow);
+      renderCart();
     })
     .catch((error) => {
-      alert(error.response.data.message);
+      // alert(error.response.data.message);
+      alert("發生了某些錯誤，將重新整理畫面。");
+      location.reload();
     })
 }
+
 
 // 訂單部分
 // 送出購買訂單
@@ -265,6 +283,8 @@ function createOrder(userObj) {
   axios.post(apiUrl, userObj)
     .then((response) => {
       getCartList();
+      orderInfoForm.reset();
+      alert("訂單已送出。");
     })
     .catch((error) => {
       alert(error.response.data.message);
@@ -286,7 +306,6 @@ orderInfoForm.addEventListener("submit", (e) => {
     }
   }
   createOrder(userObj);
-  orderInfoForm.reset();
 })
 
 const orderInfoMessages = document.querySelectorAll(".orderInfo-message");
