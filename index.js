@@ -120,7 +120,6 @@ function main() {
     productSelect.innerHTML = optionStr +
       categories.map((item) => `<option value=${item}>${item}</option>`).join("");
   }
-
   productSelect.addEventListener("change", (e) => {
     let selectedProduct;
     if (e.target.value === "全部") {
@@ -130,6 +129,22 @@ function main() {
     }
     renderProducts(selectedProduct);
   });
+
+  // 以關鍵字搜尋商品
+  const searchInput = document.querySelector(".searchInput");
+  const searchBtn = document.querySelector(".searchBtn");
+  searchBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    let targetList = productList.filter((product) => {
+      let title = product.title.toLowerCase();
+      let keyword = searchInput.value.trim().toLowerCase();
+      return title.match(keyword);
+    })
+
+    renderProducts(targetList);
+    searchInput.value = "";
+  })
 
 
   // 購物車部分

@@ -907,8 +907,25 @@ body {
 
 .searchWrap {
   display: flex;
+  /* min-height: 38px; */
+  margin-bottom: 30px;
 
   & input {
     margin-right: 10px;
+    min-width: 200px;
+    border-radius: 5px;
+    text-indent: 10px;
+    border: 1px solid #B9B9B9;
+  }
+
+  & button {
+    border-radius: 5px;
+    border: 1px solid #B9B9B9;
+    color: #797979;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: #e1e1e1;
+    }
   }
 }
