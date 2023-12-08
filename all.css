@@ -898,3 +898,17 @@ body {
     display: inline-block;
   }
 }
+
+.select-and-search {
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.searchWrap {
+  display: flex;
+
+  & input {
+    margin-right: 10px;
+  }
+}

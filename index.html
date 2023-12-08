@@ -402,12 +402,26 @@
     </ul>
   </section>
   <section class="wrap productDisplay">
-    <select
-      name=""
-      class="productSelect"
-    >
-      <!-- render options -->
-    </select>
+    <section class="select-and-search">
+      <select
+        name=""
+        class="productSelect"
+      >
+        <!-- render options -->
+      </select>
+      <form class="searchWrap">
+        <input
+          class="searchInput"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+        >
+        <button
+          class="btn searchBtn"
+          type="submit"
+        >Search</button>
+      </form>
+    </section>
     <ul class="productWrap">
       <!-- render products li list -->
     </ul>
