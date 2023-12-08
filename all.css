@@ -522,7 +522,7 @@ body {
   border: 1px solid #B9B9B9;
   color: #797979;
   min-height: 38px;
-  min-width: 255px;
+  min-width: 200px;
   border-radius: 5px;
   text-indent: 10px;
   margin-bottom: 30px;
@@ -571,10 +571,6 @@ body {
 
 .h3-bottom {
   height: 3.75rem;
-  /* display: flex; */
-  /* vertical-align: bottom; */
-  /* flex-direction: column; */
-  /* justify-content: flex-end;  */
 }
 
 @media (max-width: 900px) {
@@ -909,10 +905,11 @@ body {
   display: flex;
   /* min-height: 38px; */
   margin-bottom: 30px;
+  margin-right: 20px;
 
   & input {
     margin-right: 10px;
-    min-width: 200px;
+    min-width: 150px;
     border-radius: 5px;
     text-indent: 10px;
     border: 1px solid #B9B9B9;
