@@ -60,6 +60,37 @@ function main() {
   }
 
 
+  // sweetalert2 mixin setting
+  const successToast = Swal.mixin({
+    toast: true,
+    icon: 'success',
+    iconColor: 'white',
+    position: 'top-end',
+    customClass: {
+      popup: 'colored-toast',
+    },
+    showConfirmButton: false,
+    timer: 1500,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  })
+
+  const errorToast = Swal.mixin({
+    icon: 'error',
+    iconColor: 'white',
+    title: 'Error!',
+    customClass: {
+      popup: 'colored-toast',
+    },
+    showConfirmButton: true,
+    confirmButtonText: '確認',
+    timer: 3000,
+  })
+
+
   // axios functions
   const api_path = "sky030b";
   const baseUrl = `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}`;
@@ -68,25 +99,17 @@ function main() {
   let productList = [];
   const productWrap = document.querySelector(".productWrap");
   function renderProducts(listData = productList) {
-    let str = "";
-    listData.forEach((item) => {
-      str += `
+    let str = listData.map((item) => `
       <li class="productCard">
         <h4 class="productType">新品</h4>
-        <img
-          src="${item.images}"
-          alt=""
-        >
-        <a
-          href="javascript:;"
-          class="addCardBtn"
-        >加入購物車</a>
+        <img src="${item.images}" alt="${item.title}_img">
+        <a href="javascript:;" class="addCardBtn">加入購物車</a>
         <div class="h3-bottom"><h3>${item.title}</h3></div>
         <del class="originPrice">NT$${item.origin_price.toLocaleString()}</del>
         <p class="nowPrice">NT$${item.price.toLocaleString()}</p>
       </li>
       `
-    })
+    ).join("");
     productWrap.innerHTML = str;
 
     productWrap.querySelectorAll(".addCardBtn").forEach((btn, index) => {
@@ -98,16 +121,19 @@ function main() {
 
   // 取得產品列表
   function getProductsList() {
-    const apiUrl = `${baseUrl}/products`;
+    let apiUrl = `${baseUrl}/products`;
     axios.get(apiUrl)
       .then((response) => {
         productList = response.data.products;
         renderOption();
         renderProducts(productList);
       })
-      .catch((error) => {
+      .catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        // alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "產品列表取得失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -134,6 +160,7 @@ function main() {
   const searchInput = document.querySelector(".searchInput");
   const searchBtn = document.querySelector(".searchBtn");
   searchBtn.addEventListener("click", (e) => {
+    successToast.close();
     e.preventDefault();
 
     let targetList = productList.filter((product) => {
@@ -142,6 +169,14 @@ function main() {
       return title.match(keyword);
     })
 
+    if (!targetList[0]) {
+      targetList = productList;
+      successToast.fire({
+        icon: "warning",
+        text: "無商品符合您的關鍵字，將展示全部產品",
+        timer: 3000
+      })
+    };
     renderProducts(targetList);
     searchInput.value = "";
   })
@@ -165,15 +200,12 @@ function main() {
       <tr><td><div>購物車內尚無商品。</div></td></tr>
       `;
     } else {
-      objData.carts.forEach((item, index) => {
+      objData.carts.forEach((item) => {
         str += `
         <tr>
           <td>
             <div class="cardItem-title">
-              <img
-                src=${item.product.images}
-                alt="product picture"
-              >
+              <img src=${item.product.images} alt="product picture">
               <p>${item.product.title}</p>
             </div>
           </td>
@@ -185,12 +217,7 @@ function main() {
           </td>
           <td>NT$${(item.product.price * item.quantity).toLocaleString()}</td>
           <td class="discardBtn">
-            <a
-              href="javascript:;"
-              class="material-icons deleteBtn"
-            >
-              clear
-            </a>
+            <a href="javascript:;" class="material-icons deleteBtn">clear</a>
           </td>
         </tr>
         `;
@@ -200,9 +227,7 @@ function main() {
     str += `
     <tr>
       <td>
-        <a
-          href="javascript:;"
-          class="discardAllBtn ${objData.carts[0] ? "" : "isDisabled"}"
+        <a href="javascript:;" class="discardAllBtn ${objData.carts[0] ? "" : "isDisabled"}"
         >刪除所有品項</a>
       </td>
       <td></td>
@@ -242,9 +267,12 @@ function main() {
         cartNow = response.data;
         renderCart();
       })
-      .catch((error) => {
+      .catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        // alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "取得購物車失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -272,10 +300,16 @@ function main() {
       .then((response) => {
         cartNow = response.data;
         renderCart();
+        successToast.fire({
+          title: '新增至購物車成功',
+        })
       })
-      .catch((error) => {
+      .catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        // alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "新增至購物車失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -299,10 +333,17 @@ function main() {
       .then((response) => {
         cartNow = response.data;
         renderCart();
+        successToast.fire({
+          icon: 'success',
+          title: '購物車內商品數量更改成功',
+        })
       })
-      .catch((error) => {
+      .catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        // alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "購物車內商品數量更改失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -314,10 +355,16 @@ function main() {
       .then((response) => {
         cartNow = response.data;
         renderCart();
+        successToast.fire({
+          icon: 'success',
+          title: '已刪除購物車內全部商品',
+        })
       })
-      .catch((error) => {
+      .catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "刪除購物車內全部商品失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -329,10 +376,16 @@ function main() {
       .then((response) => {
         cartNow = response.data;
         renderCart();
+        successToast.fire({
+          icon: 'success',
+          title: '已刪除購物車內指定商品',
+        })
       })
-      .catch((error) => {
+      .catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "刪除購物車內指定商品失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -346,10 +399,18 @@ function main() {
       .then((response) => {
         getCartList();
         orderInfoForm.reset();
-        alert("訂單已送出。");
+        successToast.fire({
+          icon: 'success',
+          title: '訂單已送出',
+        })
       })
-      .catch((error) => {
-        alert(error.response.data.message);
+      .catch(async (error) => {
+        // alert(error.response.data.message);
+        await successToast.fire({
+          icon: 'error',
+          title: `${error.response.data.message}`,
+          timer: 3000,
+        })
       })
   }
 

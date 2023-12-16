@@ -31,6 +31,38 @@ function backstage() {
     return `${year}/${month}/${day}`;
   }
 
+
+  // sweetalert2 mixin setting
+  const successToast = Swal.mixin({
+    toast: true,
+    icon: 'success',
+    iconColor: 'white',
+    position: 'top-end',
+    customClass: {
+      popup: 'colored-toast',
+    },
+    showConfirmButton: false,
+    timer: 1500,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  })
+
+  const errorToast = Swal.mixin({
+    icon: 'error',
+    iconColor: 'white',
+    title: 'Error!',
+    customClass: {
+      popup: 'colored-toast',
+    },
+    showConfirmButton: true,
+    confirmButtonText: '確認',
+    timer: 3000,
+  })
+
+
   // axios functions
   const api_path = "sky030b";
   const baseUrl = `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}`;
@@ -111,12 +143,14 @@ function backstage() {
     const apiUrl = `${baseUrl}/orders`;
     axios.get(apiUrl, authorizationObj)
       .then((response) => {
-        orderList = response.data.orders;
+        orderList = response.data.orders.sort((a, b) => b.createdAt - a.createdAt);
         renderOrders();
         renderChart();
-      }).catch((error) => {
+      }).catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "產品列表取得失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -127,11 +161,17 @@ function backstage() {
     axios.delete(apiUrl, authorizationObj)
       .then((response) => {
         orderList = response.data.orders;
-        alert("全部訂單已刪除。")
         renderOrders();
         renderChart();
-      }).catch((error) => {
-        alert(error.response.data.message);
+        successToast.fire({
+          title: '全部訂單已刪除',
+        })
+      }).catch(async (error) => {
+        // alert(error.response.data.message);
+        await errorToast.fire({
+          text: `刪除全部訂單失敗，將重新整理畫面\n錯誤訊息：${error.response.data.message}`,
+        })
+        location.reload();
       })
   }
 
@@ -140,13 +180,17 @@ function backstage() {
     const apiUrl = `${baseUrl}/orders/${orderId}`;
     axios.delete(apiUrl, authorizationObj)
       .then((response) => {
-        orderList = response.data.orders;
-        alert("指定訂單已刪除。")
+        orderList = response.data.orders.sort((a, b) => b.createdAt - a.createdAt);
         renderOrders();
         renderChart();
-      }).catch((error) => {
+        successToast.fire({
+          title: '指定訂單已刪除',
+        })
+      }).catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "刪除指定訂單失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -163,13 +207,17 @@ function backstage() {
 
     axios.put(apiUrl, orderObj, authorizationObj)
       .then(function (response) {
-        orderList = response.data.orders;
-        alert("指定訂單付款狀態已變更。")
+        orderList = response.data.orders.sort((a, b) => b.createdAt - a.createdAt);
         renderOrders();
-        renderChart();
-      }).catch((error) => {
+        // renderChart();
+        successToast.fire({
+          title: '指定訂單付款狀態已變更',
+        })
+      }).catch(async (error) => {
         // alert(error.response.data.message);
-        alert("發生了某些錯誤，將重新整理畫面。");
+        await errorToast.fire({
+          text: "變更指定訂單付款狀態失敗，將重新整理畫面",
+        })
         location.reload();
       })
   }
@@ -191,9 +239,11 @@ function backstage() {
           productList = response.data.products;
           resolve();
         })
-        .catch((error) => {
+        .catch(async (error) => {
           // alert(error.response.data.message);
-          alert("發生了某些錯誤，將重新整理畫面。");
+          await errorToast.fire({
+            text: "產品列表取得失敗，將重新整理畫面",
+          })
           location.reload();
           reject(error);
         });
@@ -281,9 +331,7 @@ function backstage() {
   // 網頁初始化
   function init() {
     getProductsList()
-      .then(() => {
-        getOrderList();
-      })
+      .then(getOrderList())
   }
   init();
 }
